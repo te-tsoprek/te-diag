@@ -19,7 +19,7 @@ data_url='https://data1.agt.thousandeyes.com'
 all_urls=[reg_url, sc1_url, c1_url, data_url]
 yum_path = '/etc/yum.repos.d/thousandeyes.repo'
 apt_path = '/etc/apt/sources.list.d/thousandeyes.list'
-os_info=[]
+os_info = []
 yum_config_rh8=['[thousandeyes]', 'name=ThousandEyes', 'baseurl=https://yum.thousandeyes.com/RHEL/8/x86_64/', 'gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-thousandeyes', 'gpgcheck=1']
 yum_config_rh7=['[thousandeyes]', 'name=ThousandEyes', 'baseurl=https://yum.thousandeyes.com/RHEL/7/x86_64/', 'gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-thousandeyes', 'gpgcheck=1']
 apt_config_file="deb https://apt.thousandeyes.com focal main"
@@ -199,15 +199,15 @@ if __name__ == '__main__':
         else:
             print('Connectivity to {} has FAILED!'.format(item))
             print('***HTTP Response code:', te_response, '***')
-
-    for upgrade_item in os_upgrade_urls:
-        apt_response = test_connectivity(upgrade_item)
-        if apt_response == 301 or apt_response == 200:
-            print('***Connectivity to {} is OK!***'.format(upgrade_item))
-            print('***HTTP Response code:', apt_response, '***')
-        else:
-            print('Connectivity to {} has FAILED!'.format(upgrade_item))
-            print('***HTTP Response code:', apt_response, '***')
+    if os_info[0] == 'Ubuntu':
+        for upgrade_item in os_upgrade_urls:
+            apt_response = test_connectivity(upgrade_item)
+            if apt_response == 301 or apt_response == 200:
+                print('***Connectivity to {} is OK!***'.format(upgrade_item))
+                print('***HTTP Response code:', apt_response, '***')
+            else:
+                print('Connectivity to {} has FAILED!'.format(upgrade_item))
+                print('***HTTP Response code:', apt_response, '***')
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
