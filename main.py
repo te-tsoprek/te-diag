@@ -226,7 +226,8 @@ def test_connectivity(url):
 
 def previous_proxy(os_name):
     if os_name == 'Red Hat Enterprise Linux':
-        yum_dir_ls = os.listdir(yum_path)
+        yum_dir = '/etc/yum.repos.d/'
+        yum_dir_ls = os.listdir(yum_dir)
         for filename in yum_dir_ls:
             with open(yum_dir + filename, 'r') as current_file:
                 for line in current_file:
@@ -237,7 +238,8 @@ def previous_proxy(os_name):
             if not proxy_line_search:
                 print('*No proxy configuration found in {}.*\n'.format(yum_dir + filename))
     elif os_name == 'Ubuntu':
-        apt_dir_ls = os.listdir(apt_path)
+        apt_dir = '/etc/apt/apt.conf.d/'
+        apt_dir_ls = os.listdir(apt_dir)
         for filename in apt_dir_ls:
             with open(apt_dir + filename, 'r') as current_file:
                 for line in current_file:
