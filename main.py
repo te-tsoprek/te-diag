@@ -47,7 +47,7 @@ Qty56ztU
 -----END PGP PUBLIC KEY BLOCK-----"""
 
 
-# Opens file for reading and check for regex NAME and VERSION which are added to os_version list
+# Opens file for reading and check for regex NAME and VERSION which are added to os_info list
 def read_os_version(file, *args):
     with open(file) as f:
         for line in f:
@@ -58,63 +58,101 @@ def read_os_version(file, *args):
                 line = line[12:-2]
                 os_info.append(line.strip())
         f.close()
+    if os_info[0] == 'Red Hat Enterprise Linux' and str(os_info[1]).startswith('7') or str(os_info[1]).startswith('8'):
+        print('***Agent runs on OS {}, version {}. If this is not correct press CTRL+C to quit.***'.format(os_info[0],
+                                                                                                           os_info[1]))
+    elif os_info[0] == 'Ubuntu' and str(os_info[1]).startswith('20'):
+        print('***Agent runs on OS {}, version {}. If this is not correct press CTRL+C to quit.***'.format(os_info[0],
+                                                                                                           os_info[1]))
+    else:
+        print('***Unsupported OS. Exiting.***')
+        print('***Agent runs on OS {}, version {}. If this is not correct press CTRL+C to quit.***'.format(os_info[0],
+                                                                                                           os_info[1]))
+        exit()
 
 
+# Checks if default repository file is configured
 def check_repo(os_name):
     # Use a breakpoint in the code line below to debug your script.
     if os_name == 'Red Hat Enterprise Linux':
-        yum_conf = os.path.isfile(yum_path)
-        os_version = os_info[1]
+        repo_path = os.path.isfile(yum_path)
+        if repo_path:
+            print("***File {} exist. Skipping creating repo file.***".format(repo_path))
+            create_repo = 'n'
+            return create_repo
+    elif os_name == 'Ubuntu':
+        repo_path = os.path.isfile(apt_path)
+        if repo_path:
+            print("***File {} exist. Skipping creating repo file.***".format(repo_path))
+            create_repo = 'n'
+            return create_repo
+    else:
+        print("***Repository file was not found.***")
+        create_repo = input('***Would you like to create repository?(y/n)***\n')
+        return create_repo
 
-        if not yum_conf:
-            print("***File {} doesn't exist. Creating repo file...***".format(yum_path))
-            if os_version.startswith('7'):
-                print("***Detected OS version {}***".format(os_version))
-                with open(yum_path, "w") as yum_conf_write:
-                    for yum_item in yum_config_rh7:
-                        yum_conf_write.write(yum_item)
+# Creates proxy configuration and return attributes
+def configure_proxy():
+    proxy = input('***Add proxy hostname:port if you use proxy, example (my.proxy.url:80).***\n').lower()
+    proxy_type = input('***Would you like to add HTTP or HTTPS proxy?(http/https)***\n').lower()
+    proxy_auth = input('***Would you like to configure authentication for proxy?(y/n)***\n')
+    if proxy_auth == 'y':
+        proxy_user = input('***Add proxy username.***\n')
+        proxy_passwd = input('***Add proxy password.***\n')
+        return proxy, proxy_type, proxy_auth, proxy_user, proxy_passwd
+    else:
+        return proxy, proxy_type, proxy_auth
+
+
+# Takes, os name and version as parameters to decide which OS config to apply. Proxy configuration is run before
+# configure_repository and attributes are passed to configure_repository
+def configure_repository(os_name, os_version, proxy, proxy_type, proxy_auth, proxy_user='user', proxy_passwd='user'):
+    if os_name == 'Red Hat Enterprise Linux':
+        print("***Creating repo file {}.***".format(yum_path))
+        if os_version.startswith('7'):
+            print("***Detected OS version {}.***".format(os_version))
+            with open(yum_path, "w") as yum_conf_write:
+                for yum_item in yum_config_rh7:
+                    yum_conf_write.write(yum_item)
+                    yum_conf_write.write("\n")
+                if proxy_use == 'y':
+                    yum_conf_write.write('proxy="{}://{}"'.format(proxy_type, proxy))
+                    yum_conf_write.write("\n")
+                    if proxy_auth == 'y':
+                        yum_conf_write.write('proxy_username="{}"'.format(proxy_user))
                         yum_conf_write.write("\n")
-                    if proxy_use == 'y':
-                        yum_conf_write.write('proxy="{}://{}"'.format(proxy_type, proxy))
+                        yum_conf_write.write('proxy_username="{}"'.format(proxy_passwd))
                         yum_conf_write.write("\n")
-                        yum_auth = input('***Would you like to configure authentication for proxy?(y/n)***\n')
-                        if yum_auth == 'y':
-                            proxy_user = input('***Add proxy username.***\n')
-                            yum_conf_write.write('proxy_username="{}"'.format(proxy_user))
-                            yum_conf_write.write("\n")
-                            proxy_passwd = input('***Add proxy password.***\n')
-                            yum_conf_write.write('proxy_username="{}"'.format(proxy_passwd))
-                            yum_conf_write.write("\n")
-                yum_conf_write.close()
-            elif os_version.startswith('8'):
-                print("***Detected OS version {}***".format(os_version))
-                with open(yum_path, "w") as yum_conf_write:
-                    for yum_item in yum_config_rh8:
-                        yum_conf_write.write(yum_item)
+            yum_conf_write.close()
+
+        elif os_version.startswith('8'):
+            print("***Detected OS version {}***".format(os_version))
+            with open(yum_path, "w") as yum_conf_write:
+                for yum_item in yum_config_rh8:
+                    yum_conf_write.write(yum_item)
+                    yum_conf_write.write("\n")
+                if proxy_use == 'y':
+                    yum_conf_write.write('proxy="{}://{}"'.format(proxy_type, proxy))
+                    yum_conf_write.write("\n")
+                    if proxy_auth == 'y':
+                        yum_conf_write.write('proxy_username="{}"'.format(proxy_user))
                         yum_conf_write.write("\n")
-                    if proxy_use == 'y':
-                        yum_conf_write.write('proxy="{}://{}"'.format(proxy_type, proxy))
+                        yum_conf_write.write('proxy_username="{}"'.format(proxy_passwd))
                         yum_conf_write.write("\n")
-                yum_conf_write.close()
-        else:
-            print("***File {} exist. Skipping creating repo file.***".format(yum_path))
-            with open(yum_path, 'r') as read_proxy:
-                for line in read_proxy:
-                    if re.search('proxy=', line):
-                        print(line)
-                    if re.search('proxy_user', line):
-                        print(line)
-                    if re.search('proxy_auth', line):
-                        print(line)
+            yum_conf_write.close()
 
     elif os_name == 'Ubuntu':
-        apt_conf = os.path.isfile(apt_path)
-        if not apt_conf:
-            print("File {} doesn't exist. Creating repo file.".format(apt_path))
-            with open(apt_path, "w") as apt_conf_write:
-                apt_conf_write.write(apt_config_file)
-        else:
-            print("***File {} exist. Skipping creating repo file.***".format(apt_path))
+        print("***Creating repo file {}.***".format(apt_path))
+        with open(apt_path, "w") as apt_conf_write:
+            apt_conf_write.write(apt_config_file)
+            if proxy_use == 'y':
+                with open('/etc/apt/apt.conf.d/95proxies', 'w') as apt_proxy_write:
+                    if proxy_auth =='y':
+                        apt_proxy_write.write('Acquire::{}::proxy "{}://{}:{}@{}";'.format(proxy_type, proxy_type, proxy_user, proxy_passwd, proxy))
+                        apt_proxy_write.close()
+                    else:
+                        apt_proxy_write.write('Acquire::{}::proxy "{}://{}";'.format(proxy_type, proxy_type, proxy))
+                        apt_proxy_write.close()
     else:
         print('OS version is not RHAT or Ubuntu!')
 
@@ -161,22 +199,24 @@ def check_gpg_key():
             else:
                 print('***GPG key  was NOT found or added to APT.***')
     else:
-        print('***Skipping check, unsupported OS.***')
+        print('*Skipping check, unsupported OS.*')
 
 
 def test_connectivity(url):
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
-    if proxy:
+    if current_proxy_config[0]:
+        print('*Testing connectivity with proxy {}*'.format(current_proxy_config[0]))
         try:
             req = urllib.request.Request(url)
-            req.set_proxy(proxy, 'http')
+            req.set_proxy(current_proxy_config[0], 'http')
             url_response = urllib.request.urlopen(req, context=ctx)
             return url_response.getcode()
         except urllib.error.HTTPError as err:
             return err.code
     else:
+        print('*Testing connectivity without proxy (DIRECT).*')
         try:
             url_response = urllib.request.urlopen(url, context=ctx)
             return url_response.getcode()
@@ -189,44 +229,47 @@ def previous_proxy(os_name):
         yum_dir = '/etc/yum/repos.d/'
         yum_dir_ls = os.listdir(yum_dir)
         for filename in yum_dir_ls:
-            with open(yum_dir+filename, 'r') as current_file:
+            with open(yum_dir + filename, 'r') as current_file:
                 for line in current_file:
                     proxy_line_search = re.search('proxy=', line)
                     if proxy_line_search:
                         print('***Found proxy in {}.***\n'.format(current_file))
                         print('*** Proxy in file: {}.\n'.format(line))
             if not proxy_line_search:
-                print('***No proxy configuration found in {}.***\n'.format(yum_dir+filename))
+                print('*No proxy configuration found in {}.*\n'.format(yum_dir + filename))
     elif os_name == 'Ubuntu':
         apt_dir = '/etc/apt/apt.conf.d/'
         apt_dir_ls = os.listdir(apt_dir)
         for filename in apt_dir_ls:
-            with open(apt_dir+filename, 'r') as current_file:
+            with open(apt_dir + filename, 'r') as current_file:
                 for line in current_file:
                     proxy_line_search = re.search(r'acquire::http*::proxy', line.lower())
                     if proxy_line_search:
-                        print('***Found proxy in {}.***\n'.format(apt_dir+filename))
+                        print('***Found proxy in {}.***\n'.format(apt_dir + filename))
                         print('*** Proxy configuration in file: {}.\n'.format(line))
             if not proxy_line_search:
-                print('***No proxy configuration found in {}.***\n'.format(apt_dir+filename))
+                print('*No proxy configuration found in {}.*\n'.format(apt_dir + filename))
     else:
-        print('***Skipping check, unsupported OS.***')
+        print('*Skipping check, unsupported OS.*')
 
 
 if __name__ == '__main__':
     read_os_version(os_release_path)
     previous_proxy(os_info[0])
+    create_repo = check_repo(os_info[0])
     while not lb:
-        proxy_use = input('***Would you like to use proxy?***\n').lower()
+        proxy_use = input('***Would you like to use proxy?(y/n)***\n').lower()
         if proxy_use == 'y':
-            proxy = input('***Add proxy hostname:port if you use proxy, example (my.proxy.url:80).***\n').lower()
-            proxy_type = input('***Would you like to add HTTP or HTTPS proxy?(http/https)***\n').lower()
+            current_proxy_config = configure_proxy()
+            if create_repo == 'y':
+                configure_repository(os_info[0], os_info[1], current_proxy_config[0], current_proxy_config[1], current_proxy_config[2])
             lb = True
         elif proxy_use == 'n':
+            if create_repo == 'y':
+                configure_repository(os_info[0], os_info[1], current_proxy_config[0], current_proxy_config[1], current_proxy_config[2])
             lb = True
         else:
             continue
-    check_repo(os_info[0])
     check_gpg_key()
     for item in all_urls:
         te_response = test_connectivity(item)
