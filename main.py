@@ -206,7 +206,7 @@ def test_connectivity(url):
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
-    if current_proxy_config[0]:
+    if proxy_use == 'y':
         print('*Testing connectivity with proxy {}*'.format(current_proxy_config[0]))
         try:
             req = urllib.request.Request(url)
@@ -270,7 +270,7 @@ if __name__ == '__main__':
             lb = True
         else:
             continue
-    check_gpg_key()
+        check_gpg_key()
     for item in all_urls:
         te_response = test_connectivity(item)
         print('response:', te_response)
