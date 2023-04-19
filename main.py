@@ -170,7 +170,7 @@ def check_gpg_key():
         rpm_key_list = subprocess.run(rpm_list_cmd, stdout=subprocess.PIPE)
         yum_key_in_rpm = re.search('ThousandEyes', str(rpm_key_list))
         if not yum_gpg_file or not yum_key_in_rpm:
-            print("***File {} doesn't exist.")
+            print("***File {} doesn't exist or the GPG key is not found.".format(yum_gpg_path ))
             add_gpg_key= input("***Would you like to download and import gpg key to rpm?(y/n)***\n").lower()
             if add_gpg_key == 'y':
                 print("***File {} doesn't exist. Creating key file and importing...***".format(yum_gpg_path))
