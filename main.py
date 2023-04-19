@@ -229,7 +229,7 @@ def previous_proxy(os_name):
     agent_cfg_path = '/etc/te-agent.cfg'
     with open(agent_cfg_path, 'r') as current_file:
         for line in current_file:
-            proxy_line_search = re.search('proxy=', line)
+            proxy_line_search = re.search('proxy-location=', line)
             if proxy_line_search:
                 print('***Found proxy in TE agent configuration: {}.***\n'.format(current_file))
                 print('*** Proxy in file: {}.\n'.format(line))
