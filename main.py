@@ -82,7 +82,7 @@ def check_repo(os_name):
             return create_repo
         else:
             print("***Repository file was not found.***")
-            create_repo = input('***Would you like to create repository?(y/n)***\n')
+            create_repo = input('***Would you like to create yum repository for ThousandEyes?(y/n)***\n')
             return create_repo
 
     elif os_name == 'Ubuntu':
@@ -171,9 +171,9 @@ def check_gpg_key():
         yum_key_in_rpm = re.search('ThousandEyes', str(rpm_key_list))
         if not yum_gpg_file or not yum_key_in_rpm:
             print("***File {} doesn't exist or the GPG key is not found.".format(yum_gpg_path ))
-            add_gpg_key= input("***Would you like to download and import gpg key to rpm?(y/n)***\n").lower()
+            add_gpg_key= input("***Would you like to download and import GPG key to rpm?(y/n)***\n").lower()
             if add_gpg_key == 'y':
-                print("***File {} doesn't exist. Creating key file and importing...***".format(yum_gpg_path))
+                print("***File {} doesn't exist. Creating key file and importing.***".format(yum_gpg_path))
                 with open(yum_gpg_path, 'w') as yum_gpg_write:
                     yum_gpg_write.write(yum_gpg_key)
                     yum_import_cmd = ("sudo", "rpm", "--import", "/etc/pki/rpm-gpg/RPM-GPG-KEY-thousandeyes")
