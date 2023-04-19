@@ -167,8 +167,8 @@ def check_gpg_key():
         yum_key_in_rpm = re.search('ThousandEyes', str(rpm_key_list))
         if not yum_gpg_file or not yum_key_in_rpm:
             print("***File {} doesn't exist.")
-            create_yum_repo = input("***Would you like to download and import gpg key to rpm?(y/n)***\n").lower()
-            if create_yum_repo == 'y':
+            add_gpg_key= input("***Would you like to download and import gpg key to rpm?(y/n)***\n").lower()
+            if add_gpg_key == 'y':
                 print("***File {} doesn't exist. Creating key file and importing...***".format(yum_gpg_path))
                 with open(yum_gpg_path, 'w') as yum_gpg_write:
                     yum_gpg_write.write(yum_gpg_key)
@@ -190,8 +190,8 @@ def check_gpg_key():
 
         else:
             print("***Key is not in apt-key list. Creating key file and importing...***")
-            create_apt_repo = input("***Would you like to download and import gpg key to apt?(y/n)***\n").lower()
-            if create_apt_repo == 'y':
+            add_gpg_key = input("***Would you like to download and import gpg key to apt?(y/n)***\n").lower()
+            if add_gpg_key == 'y':
                 subprocess.run(
                     ["curl", "https://apt.thousandeyes.com/thousandeyes-apt-key.pub", "--output", "apt_key.pub"])
                 time.sleep(3)
@@ -225,9 +225,20 @@ def test_connectivity(url):
 
 
 def previous_proxy(os_name):
+    # Check for proxy in te-agent config
+    agent_cfg_path = '/etc/te-agent.cfg'
+    with open(agent_cfg_path, 'r') as current_file:
+        for line in current_file:
+            proxy_line_search = re.search('proxy=', line)
+            if proxy_line_search:
+                print('***Found proxy in TE agent configuration: {}.***\n'.format(current_file))
+                print('*** Proxy in file: {}.\n'.format(line))
+
+    # Match OS RHAT/Ubuntu and search in repo directory for proxy
     if os_name == 'Red Hat Enterprise Linux':
         yum_dir = '/etc/yum.repos.d/'
         yum_dir_ls = os.listdir(yum_dir)
+
         for filename in yum_dir_ls:
             with open(yum_dir + filename, 'r') as current_file:
                 for line in current_file:
