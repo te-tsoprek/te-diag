@@ -83,7 +83,7 @@ def check_repo(os_name):
     elif os_name == 'Ubuntu':
         repo_path = os.path.isfile(apt_path)
         if repo_path:
-            print("***File {} exist. Skipping creating repo file.***".format(repo_path))
+            print("***File {} exist. Skipping creating repo file.***".format(apt_path))
             create_repo = 'n'
             return create_repo
     else:
@@ -189,7 +189,7 @@ def check_gpg_key():
             print('***Found key in apt-key list. Skipping adding file. Do additional check manually.***')
 
         else:
-            print("***Key is not in apt-key list. Creating key file and importing...***")
+            print("***Key is not in apt-key list. Creating key file and importing.***")
             add_gpg_key = input("***Would you like to download and import gpg key to apt?(y/n)***\n").lower()
             if add_gpg_key == 'y':
                 subprocess.run(
@@ -231,8 +231,8 @@ def previous_proxy(os_name):
         for line in current_file:
             proxy_line_search = re.search('proxy-location=', line)
             if proxy_line_search:
-                print('***Found proxy in TE agent configuration: {}.***\n'.format(current_file))
-                print('*** Proxy in file: {}.\n'.format(line))
+                print('***Found proxy in TE agent configuration: {}.***\n'.format(agent_cfg_path))
+                print('*** Proxy configuration in the file: {}.***\n'.format(line))
 
     # Match OS RHAT/Ubuntu and search in repo directory for proxy
     if os_name == 'Red Hat Enterprise Linux':
