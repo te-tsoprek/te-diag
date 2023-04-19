@@ -124,9 +124,9 @@ def configure_repository(os_name, os_version, proxy = None, proxy_type = None, p
                     yum_conf_write.write('proxy="{}://{}"'.format(proxy_type, proxy))
                     yum_conf_write.write("\n")
                     if proxy_auth == 'y':
-                        yum_conf_write.write('proxy_username="{}"'.format(proxy_user))
+                        yum_conf_write.write('proxy_username={}'.format(proxy_user))
                         yum_conf_write.write("\n")
-                        yum_conf_write.write('proxy_username="{}"'.format(proxy_passwd))
+                        yum_conf_write.write('proxy_password={}'.format(proxy_passwd))
                         yum_conf_write.write("\n")
             yum_conf_write.close()
 
@@ -137,12 +137,12 @@ def configure_repository(os_name, os_version, proxy = None, proxy_type = None, p
                     yum_conf_write.write(yum_item)
                     yum_conf_write.write("\n")
                 if proxy_use == 'y':
-                    yum_conf_write.write('proxy="{}://{}"'.format(proxy_type, proxy))
+                    yum_conf_write.write('proxy={}://{}'.format(proxy_type, proxy))
                     yum_conf_write.write("\n")
                     if proxy_auth == 'y':
-                        yum_conf_write.write('proxy_username="{}"'.format(proxy_user))
+                        yum_conf_write.write('proxy_username={}'.format(proxy_user))
                         yum_conf_write.write("\n")
-                        yum_conf_write.write('proxy_username="{}"'.format(proxy_passwd))
+                        yum_conf_write.write('proxy_password={}'.format(proxy_passwd))
                         yum_conf_write.write("\n")
             yum_conf_write.close()
 
