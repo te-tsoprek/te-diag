@@ -246,8 +246,8 @@ def previous_proxy(os_name):
                     if proxy_line_search:
                         print('***Found proxy in {}.***\n'.format(current_file))
                         print('*** Proxy in file: {}.\n'.format(line))
-            if not proxy_line_search:
-                print('*No proxy configuration found in {}.*\n'.format(yum_dir + filename))
+            # if not proxy_line_search:
+            #     print('*No proxy configuration found in {}.*\n'.format(yum_dir + filename))
     elif os_name == 'Ubuntu':
         apt_dir = '/etc/apt/apt.conf.d/'
         apt_dir_ls = os.listdir(apt_dir)
@@ -258,8 +258,8 @@ def previous_proxy(os_name):
                     if proxy_line_search:
                         print('***Found proxy in {}.***\n'.format(apt_dir + filename))
                         print('*** Proxy configuration in file: {}.\n'.format(line))
-            if not proxy_line_search:
-                print('*No proxy configuration found in {}.*\n'.format(apt_dir + filename))
+            # if not proxy_line_search:
+            #     print('*No proxy configuration found in {}.*\n'.format(apt_dir + filename))
     else:
         print('*Skipping check, unsupported OS.*')
 
