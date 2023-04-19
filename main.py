@@ -80,16 +80,21 @@ def check_repo(os_name):
             print("***File {} exist. Skipping creating repo file.***".format(repo_path))
             create_repo = 'n'
             return create_repo
+        else:
+            print("***Repository file was not found.***")
+            create_repo = input('***Would you like to create repository?(y/n)***\n')
+            return create_repo
+
     elif os_name == 'Ubuntu':
         repo_path = os.path.isfile(apt_path)
         if repo_path:
             print("***File {} exist. Skipping creating repo file.***".format(apt_path))
             create_repo = 'n'
             return create_repo
-    else:
-        print("***Repository file was not found.***")
-        create_repo = input('***Would you like to create repository?(y/n)***\n')
-        return create_repo
+        else:
+            print("***Repository file was not found.***")
+            create_repo = input('***Would you like to create repository?(y/n)***\n')
+            return create_repo
 
 # Creates proxy configuration and return attributes
 def configure_proxy():
@@ -106,7 +111,7 @@ def configure_proxy():
 
 # Takes, os name and version as parameters to decide which OS config to apply. Proxy configuration is run before
 # configure_repository and attributes are passed to configure_repository
-def configure_repository(os_name, os_version, proxy, proxy_type, proxy_auth, proxy_user='user', proxy_passwd='user'):
+def configure_repository(os_name, os_version, proxy = None, proxy_type = None, proxy_auth= None, proxy_user='user', proxy_passwd='user'):
     if os_name == 'Red Hat Enterprise Linux':
         print("***Creating repo file {}.***".format(yum_path))
         if os_version.startswith('7'):
@@ -158,7 +163,6 @@ def configure_repository(os_name, os_version, proxy, proxy_type, proxy_auth, pro
 
 
 def check_gpg_key():
-    print('GPG START')
     if os_info[0] == 'Red Hat Enterprise Linux':
         yum_gpg_path = '/etc/pki/rpm-gpg/RPM-GPG-KEY-thousandeyes'
         yum_gpg_file = os.path.isfile(yum_gpg_path)
@@ -207,7 +211,7 @@ def test_connectivity(url):
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
     if proxy_use == 'y':
-        print('*Testing connectivity with proxy {}*'.format(current_proxy_config[0]))
+        # print('*Testing connectivity with proxy {}*'.format(current_proxy_config[0]))
         try:
             req = urllib.request.Request(url)
             req.set_proxy(current_proxy_config[0], 'http')
@@ -216,7 +220,7 @@ def test_connectivity(url):
         except urllib.error.HTTPError as err:
             return err.code
     else:
-        print('*Testing connectivity without proxy (DIRECT).*')
+        # print('*Testing connectivity without proxy (DIRECT).*')
         try:
             url_response = urllib.request.urlopen(url, context=ctx)
             return url_response.getcode()
@@ -267,17 +271,18 @@ def previous_proxy(os_name):
 if __name__ == '__main__':
     read_os_version(os_release_path)
     previous_proxy(os_info[0])
-    create_repo = check_repo(os_info[0])
+    create_repo_answer = check_repo(os_info[0])
+    print(create_repo_answer)
     while not lb:
         proxy_use = input('***Would you like to use proxy?(y/n)***\n').lower()
         if proxy_use == 'y':
             current_proxy_config = configure_proxy()
-            if create_repo == 'y':
+            if create_repo_answer == 'y':
                 configure_repository(os_info[0], os_info[1], current_proxy_config[0], current_proxy_config[1], current_proxy_config[2])
             lb = True
         elif proxy_use == 'n':
-            if create_repo == 'y':
-                configure_repository(os_info[0], os_info[1], current_proxy_config[0], current_proxy_config[1], current_proxy_config[2])
+            if create_repo_answer == 'y':
+                configure_repository(os_info[0], os_info[1])
             lb = True
         else:
             continue
