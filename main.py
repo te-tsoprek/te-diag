@@ -289,7 +289,7 @@ if __name__ == '__main__':
         check_gpg_key()
     for item in all_urls:
         te_response = test_connectivity(item)
-        print('response:', te_response)
+        # print('response:', te_response)
         if te_response == 404 or te_response == 401:
             print('***Connectivity to {} is OK!***'.format(item))
             # print('***HTTP Response code:', te_response, '***')
