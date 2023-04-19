@@ -292,16 +292,16 @@ if __name__ == '__main__':
         print('response:', te_response)
         if te_response == 404 or te_response == 401:
             print('***Connectivity to {} is OK!***'.format(item))
-            print('***HTTP Response code:', te_response, '***')
+            # print('***HTTP Response code:', te_response, '***')
         else:
             print('Connectivity to {} has FAILED!'.format(item))
-            print('***HTTP Response code:', te_response, '***')
+            # print('***HTTP Response code:', te_response, '***')
     if os_info[0] == 'Ubuntu':
         for upgrade_item in os_upgrade_urls:
             apt_response = test_connectivity(upgrade_item)
             if apt_response == 301 or apt_response == 200:
                 print('***Connectivity to {} is OK!***'.format(upgrade_item))
-                print('***HTTP Response code:', apt_response, '***')
+                # print('***HTTP Response code:', apt_response, '***')
             else:
                 print('Connectivity to {} has FAILED!'.format(upgrade_item))
                 print('***HTTP Response code:', apt_response, '***')
