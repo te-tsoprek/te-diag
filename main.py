@@ -236,7 +236,7 @@ def previous_proxy(os_name):
             proxy_line_search = re.search('proxy-location=', line)
             if proxy_line_search:
                 print('***Found proxy in TE agent configuration: {}.***\n'.format(agent_cfg_path))
-                print('*** Proxy configuration in the file: {}.***\n'.format(line))
+                print('*** Proxy configuration in the {} file:\n {}.***\n'.format(agent_cfg_path, line))
 
     # Match OS RHAT/Ubuntu and search in repo directory for proxy
     if os_name == 'Red Hat Enterprise Linux':
@@ -248,7 +248,7 @@ def previous_proxy(os_name):
                 for line in current_file:
                     proxy_line_search = re.search('proxy=', line)
                     if proxy_line_search:
-                        print('***Found proxy in {}.***\n'.format(current_file))
+                        print('***Found proxy in {}.***\n'.format(yum_dir + filename))
                         print('*** Proxy in file: {}.\n'.format(line))
             # if not proxy_line_search:
             #     print('*No proxy configuration found in {}.*\n'.format(yum_dir + filename))
@@ -261,7 +261,7 @@ def previous_proxy(os_name):
                     proxy_line_search = re.search(r'acquire::http*::proxy', line.lower())
                     if proxy_line_search:
                         print('***Found proxy in {}.***\n'.format(apt_dir + filename))
-                        print('*** Proxy configuration in file: {}.\n'.format(line))
+                        print('*** Proxy configuration in file: {}.\n'.format(apt_dir + filename))
             # if not proxy_line_search:
             #     print('*No proxy configuration found in {}.*\n'.format(apt_dir + filename))
     else:
