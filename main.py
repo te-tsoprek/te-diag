@@ -77,7 +77,7 @@ def check_repo(os_name):
     if os_name == 'Red Hat Enterprise Linux':
         repo_path = os.path.isfile(yum_path)
         if repo_path:
-            print("***File {} exist. Skipping creating repo file.***".format(repo_path))
+            print("***File {} exist. Skipping creating repo file.***".format(yum_path))
             create_repo = 'n'
             return create_repo
         else:
@@ -121,7 +121,7 @@ def configure_repository(os_name, os_version, proxy = None, proxy_type = None, p
                     yum_conf_write.write(yum_item)
                     yum_conf_write.write("\n")
                 if proxy_use == 'y':
-                    yum_conf_write.write('proxy="{}://{}"'.format(proxy_type, proxy))
+                    yum_conf_write.write('proxy={}://{}'.format(proxy_type, proxy))
                     yum_conf_write.write("\n")
                     if proxy_auth == 'y':
                         yum_conf_write.write('proxy_username={}'.format(proxy_user))
