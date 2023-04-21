@@ -218,8 +218,12 @@ def test_connectivity(url):
             req.set_proxy(current_proxy_config[0], 'http')
             url_response = urllib.request.urlopen(req, context=ctx)
             return url_response.getcode()
-        except urllib.error.HTTPError as err:
-            return err.code
+        except HTTPError as err:
+            print('The server couldn\'t fulfill the request.')
+            print('Error code: ', err.code)
+        except URLError as err:
+            print('We failed to reach a server.')
+            print('Reason: ', err.reason)
     else:
         # print('*Testing connectivity without proxy (DIRECT).*')
         try:
