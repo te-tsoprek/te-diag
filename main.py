@@ -5,6 +5,7 @@ import subprocess
 import urllib.request
 import ssl
 import urllib.error
+from urllib.error import HTTPError, URLError
 import time
 
 lb = bool()
@@ -224,8 +225,12 @@ def test_connectivity(url):
         try:
             url_response = urllib.request.urlopen(url, context=ctx)
             return url_response.getcode()
-        except urllib.error.HTTPError as err:
-            return err.code
+        except HTTPError as err:
+            print('The server couldn\'t fulfill the request.')
+            print('Error code: ', err.code)
+        except URLError as err:
+            print('We failed to reach a server.')
+            print('Reason: ', err.reason)
 
 
 def previous_proxy(os_name):
