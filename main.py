@@ -99,7 +99,15 @@ def check_repo(os_name):
 
 # Creates proxy configuration and return attributes
 def configure_proxy():
-    proxy = input('***Add proxy hostname:port if you use proxy, example (my.proxy.url:80).***\n').lower()
+    while True:
+        proxy = input('***Add proxy hostname:port if you use proxy, example (my.proxy.url:80).***\n').lower()
+        try:
+            re.search(r'*\.*:*', proxy)
+        except:
+            print('Proxy should be added as hostname:port, without leading http/htts!')
+            continue
+        else:
+
     proxy_type = input('***Would you like to add HTTP or HTTPS proxy?(http/https)***\n').lower()
     proxy_auth = input('***Would you like to configure authentication for proxy?(y/n)***\n')
     if proxy_auth == 'y':
